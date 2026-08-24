@@ -1,0 +1,10 @@
+c/^p/ms/
+  o/(Illegal Regex/)/ms
+  o/.*/You are not reaching this!/ms
+/ex/
+  r/ex/.*/\0/ms
+  o/.*/Exception: \0/ms
+/
+
+o/.*/
+/ms

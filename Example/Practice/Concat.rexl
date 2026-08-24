@@ -1,0 +1,16 @@
+// write the strings
+w/str1/.+/Hello, /msg
+s/.+/World\\!\//msg
+
+// prepare pattern
+s/\\/\\\\/msg
+w/tmp/(.*)/\\0\0/ms
+
+
+// concat
+r/str1/(.*)/\0/ms
+v/(.*)/tmp/ms
+
+// output
+o/(.*)/\0
+/ms

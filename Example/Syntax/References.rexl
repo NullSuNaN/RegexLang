@@ -1,0 +1,13 @@
+# Reference Variable
+w/var1/.*/var2/ms
+w/var2/.*/value/ms
+
+# Raw data
+r/var1/.*/\0/ms
+o/.*/\0
+/ms
+
+# Reference
+r/@var1/.*/\0/ms
+o/.*/\0
+/ms

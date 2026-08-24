@@ -1,0 +1,69 @@
+// O(N^2) complexity, not even bothering to optimize :)
+
+// Initialize
+s/.*/0/ms
+w/num/.*//ms
+
+// Prompt
+o/.*/Input the number in binary:
+/ms
+
+// Input
+l/[01]/ms/
+
+  // Get 1 Character
+  s/.*/a/ms 
+  i/[^01]//ms
+
+  // Concat
+  w/tmp/.*/\\0\0/
+  w/cond/.*/\0/
+  r/num/.*/\0/
+  v/.*/tmp/
+  w/num/.*/\0/
+  r/cond/.*/\0/
+/
+
+// Check Number
+r/num/0*(.*)/\1/ms
+w/num/.*/\0/ms
+l/.{13,}//
+  // Interrupt with Exception
+  w/#exc_desc/.*/Number should not be greater than 111111111111/
+  w/#exc/.*/out_of_range/
+/
+
+// Get and Format Number for Loop
+s/.*/000000000000\0/
+s/^.*(.{12})$/\1/
+// o/.*/\0 /ms
+
+// Generate Content
+w/res/.*//
+l/^(?!.*000000000000).*$// # Loop down from requested value to 0
+  // Save Decreased Loop Index
+  s/^(.*)10*$/\10111111111111/
+  w/idx/^(.{12}).*$/\1/
+
+  // Action
+  r/res/.*/\0/
+  w/res/.*/\01/
+
+  // Load the Loop Index
+  r/idx/.*/\0/
+  // o/.*/\0 /
+/
+
+// Check Prime
+r/res/.*/\0/
+c/^fail$//
+  l/^1?$|^(11+)\1+$/ms/
+    r/num/.*/\0/
+    o/.*/\0 is not a prime number!/
+    w/#exc/.*/fail/
+  /
+  r/num/.*/\0/
+  o/.*/\0 is a prime number!/
+/ex//
+o/.*/
+/

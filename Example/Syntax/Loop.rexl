@@ -1,0 +1,15 @@
+/ Initialize buffer
+s/.*/0000000/ms
+
+// Repeat 67 times
+l/^(?!.*1000011).*$/ms/
+  // Increase Loop Index
+  s/^(.*)01*$/\110000000/
+  s/^(.{7}).*$/\1/
+
+  // Action
+  o/.*/./ms
+/
+
+o/.*/
+/ms

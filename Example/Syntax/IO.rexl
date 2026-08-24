@@ -1,0 +1,12 @@
+# set input length to 5
+s/.*/12345/ms
+
+# prompt
+o/.*/Input 5 characters: /ms
+
+# input with processing
+i/(.)([A-Z])/\1 \2/msg
+
+# output
+o/.*/Result: \0
+/ms
