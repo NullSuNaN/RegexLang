@@ -1,12 +1,11 @@
-﻿using RegexLang.Code;
-using RegexLang.Code.Compiling;
-using RegexLang.Operation;
-using RegexLang.Runtime;
+﻿using RegexLang.Code.Compiling;
+using RegexLang.Program.Shell;
 using System.CommandLine;
 using System.CommandLine.Help;
 
 // 1. Shared argument definition
-var fileArgument = new Argument<FileInfo>("filename") { Description = "The path to the target file.", Arity = ArgumentArity.ZeroOrOne };
+var optionalFileArgument = new Argument<FileInfo>("filename") { Description = "The path to the target file.", Arity = ArgumentArity.ZeroOrOne };
+var fileArgument = new Argument<FileInfo>("filename") { Description = "The path to the target file." };
 
 // 2. Define subcommands
 var runCommand = new Command("run", "Runs the specified file.") { fileArgument };
@@ -28,11 +27,11 @@ rootCommand.Subcommands.Add(shellCommand);
 
 // To support 'RegexLang <filename>' natively without subtyping conflict, 
 // add the filename argument directly to the root, but handle fallback execution:
-rootCommand.Arguments.Add(fileArgument);
+rootCommand.Arguments.Add(optionalFileArgument);
 
 rootCommand.SetAction(async (result, ct) =>
 {
-  var file = result.GetValue(fileArgument);
+  var file = result.GetValue(optionalFileArgument);
   if (file != null)
   {
     return await HandleRunAsync(file, ct);
@@ -46,11 +45,32 @@ foreach (var i in rootCommand.Options)
 {
   if (i is HelpOption defaultHelpOption)
   {
-    defaultHelpOption.Action = new ExampleHelpAction((HelpAction)defaultHelpOption.Action!);
+    defaultHelpOption.Action = new ExampleHelpAction((HelpAction)defaultHelpOption.Action!, result =>
+    {
+      string processName = Path.GetFileName(Environment.ProcessPath) ?? "RegexLang";
+      return result.CommandResult.Command switch
+      {
+        var value when value == runCommand => [$"{processName} run Example.rexl"],
+        var value when value == checkCommand => [$"{processName} check Example.rexl"],
+        var value when value == shellCommand => [$"{processName} shell"],
+        _ => [
+          $"{processName} Example.rexl # Run Example.rexl",
+          $"{processName} -- Example.rexl # Run Example.rexl",
+          $"{processName} run Example.rexl # Run Example.rexl",
+          $"{processName} check Example.rexl # Check the syntax of Example.rexl",
+          $"{processName} shell # open interactive shell"
+        ],
+      };
+    });
   }
 }
 
-return await rootCommand.Parse(args).InvokeAsync();
+var config = new InvocationConfiguration 
+{ 
+    ProcessTerminationTimeout = null 
+};
+
+return await rootCommand.Parse(args).InvokeAsync(config);
 
 async Task<int> HandleRunAsync(FileInfo entryFile, CancellationToken cancellationToken)
 {
@@ -69,34 +89,5 @@ async Task<int> HandleCheckAsync(FileInfo entryFile, CancellationToken cancellat
   return 0;
 }
 
-async Task<int> HandleRunShellAsync(CancellationToken cancellationToken)
-{
-  CancellationTokenSource innerExitSource = new();
-  DateTime? lastInterruption = null;
-  Console.CancelKeyPress += (sender, e) =>
-  {
-    var now = DateTime.UtcNow;
-    if(now - Interlocked.Exchange(ref lastInterruption, now) < TimeSpan.FromSeconds(1))
-      return;
-    e.Cancel = true;
-    innerExitSource.Cancel();
-  };
-  Console.WriteLine($"RegexLang {Environment.Version}, {Environment.OSVersion}");
-  Console.WriteLine("You are now entering RegexLang Console CLI.");
-  Console.WriteLine("Run f/c/#shell.exit/ or press ^C to exit.");
-  Console.WriteLine("Press ^C twice in 1 second to force exit.");
-  Console.WriteLine();
-  Console.WriteLine("The feature is not available in this version.");
-
-  return 0;
-}
-
-record ExitShellOp(CancellationTokenSource Cts) : IOperation
-{
-  public FileTraceInfo? FileTrace => null;
-
-  public async Task OperateAsync(TaskContext context)
-  {
-    Cts.Cancel();
-  }
-}
+Task<int> HandleRunShellAsync(CancellationToken cancellationToken) =>
+  RegexLangShell.RunShellAsync(default);

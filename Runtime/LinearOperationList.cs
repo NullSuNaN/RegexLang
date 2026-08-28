@@ -16,6 +16,7 @@ public class LinearOperationList : IOperation
     {
       await op.OperateAsync(context);
       // Console.WriteLine($"Operating {op.GetType()} {op.FileTrace}");
+      if(context.cts.IsCancellationRequested) await context.CancelAsync();
       if(context.CheckException(op.FileTrace))
         break;
     }

@@ -1,15 +1,19 @@
 namespace RegexLang.Code;
 
-public record FileTraceInfo(FileInfo File, int Line, int Column)
+public record FileTraceInfo(string FilePath, long Line, long Column)
 {
-  public override string ToString()
+  public FileTraceInfo(FileInfo File, long Line, long Column) : this(GetPath(File), Line, Column) { }
+  public static string GetPath(FileInfo file)
   {
-    string filePath;
-    try { filePath = Path.GetRelativePath(Environment.CurrentDirectory, File.FullName); }
+    try { return Path.GetRelativePath(Environment.CurrentDirectory, file.FullName); }
     catch
     {
-      try { filePath = File.Name; } catch { filePath = "UNKNOWN"; };
+      try { return file.Name; } catch { return "UNKNOWN"; }
+      ;
     }
-    return $"{filePath}:{Line}:{Column}";
+  }
+  public override string ToString()
+  {
+    return $"{FilePath}:{Line}:{Column}";
   }
 }

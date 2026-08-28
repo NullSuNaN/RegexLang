@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using RegexLang.Code;
 using RegexLang.Helper;
 using RegexLang.Operation;
@@ -13,6 +14,7 @@ public class TaskContext
   private readonly TrieStringDictionary<string> StoredValues = [new(InitialActiveIndex, InitialActiveValue)];
   public TrieStringDictionary<string> GetRawStoredValues_() => StoredValues;
   public readonly TrieStringDictionary<IOperation> StoredFunctions = [];
+  public volatile CancellationTokenSource cts = new();
   public string? ActiveValue
   {
     get => QueryEffectiveValue(ActiveIndex);
@@ -26,6 +28,8 @@ public class TaskContext
   public const string ExceptionDescriptionField = "#exc_desc";
   public const string ExceptionTraceField = "#exc_trace";
   public const string BinaryExitValueField = "#exit";
+  public const string CancellationRequestField = "#cancel";
+  public const string CancellationRequestFunction = "#cancel";
   public const string NoTimeoutValue = "inf";
   public void Throw(RegexException ex)
   {
@@ -34,12 +38,25 @@ public class TaskContext
     SetEffectiveValue(ExceptionTraceField, ex.FileTrace?.ToString());
   }
 
-  public bool Catch()
+  public string? Catch()
   {
-    if (StoredValues.ContainsKey(ExceptionTypeField))
-      return true;
+    if (StoredValues.Remove(ExceptionTypeField, out var value))
+      return value;
     else
-      return false;
+      return null;
+  }
+
+  /// <summary>
+  /// A method equivalent to <see cref="CancellationTokenSource.Cancel()"/> for RegexLang runtime
+  /// </summary>
+  public async Task CancelAsync()
+  {
+    SetEffectiveValue(CancellationRequestField, "");
+    string? name;
+    if((name = QueryEffectiveVariable(CancellationRequestFunction)) != null && StoredFunctions.TryGetValue(name, out var op))
+    {
+      await op.OperateAsync(this);
+    }
   }
 
   /// <summary>

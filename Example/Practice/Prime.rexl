@@ -60,7 +60,7 @@ c/^fail$//
   l/^1?$|^(11+)\1+$/ms/
     r/num/.*/\0/
     o/.*/\0 is not a prime number!/
-    w/#exc/.*/fail/
+    w/#exc/.*/fail/ // terminate with exception
   /
   r/num/.*/\0/
   o/.*/\0 is a prime number!/

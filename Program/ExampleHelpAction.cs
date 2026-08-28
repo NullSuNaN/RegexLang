@@ -2,19 +2,16 @@ using System.CommandLine;
 using System.CommandLine.Help;
 using System.CommandLine.Invocation;
 
-internal class ExampleHelpAction(HelpAction action) : SynchronousCommandLineAction
+internal class ExampleHelpAction(HelpAction action, Func<ParseResult, string[]> getHelpList) : SynchronousCommandLineAction
 {
     private readonly HelpAction _defaultHelp = action;
 
   public override int Invoke(ParseResult parseResult)
     {
         int result = _defaultHelp.Invoke(parseResult);
-        string processName = Path.GetFileName(Environment.ProcessPath) ?? "RegexLang";
         Console.WriteLine("Examples:");
-        Console.WriteLine($"  {processName} Example.rexl");
-        Console.WriteLine($"  {processName} -- Example.rexl");
-        Console.WriteLine($"  {processName} run Example.rexl");
-        Console.WriteLine($"  {processName} check Example.rexl");
+        foreach(var str in getHelpList(parseResult))
+            Console.WriteLine($"  {str}");
         return result;
 
     }

@@ -150,14 +150,17 @@ If a `/` is used in the `FN_NAME`, it should be escaped as `\/`.
 + Remove a function.
 
 ```rexl
-f/c/<FN_NAME>/
+f/c/<PATTERN>/<REPLACEMENT>/<OPTIONS>
 ```
-If a `/` is used in the `FN_NAME`, it should be escaped as `\/`.
-+ Call a function.
+If a `/` is used in either the `PATTERN` or the `REPLACEMENT`, it should be escaped as `\/`.
+
++ It reads, operates the active value then call the function with the operated value as its name.
 
 ## Usage
 
 ```sh
-RegexLang run CODE.rexl # run rexl code directly as a script
 RegexLang -- CODE.rexl # run rexl code directly as a script
+RegexLang run CODE.rexl # run rexl code directly as a script
+RegexLang check CODE.rexl # check rexl code
+RegexLang shell # enter the interactive shell
 ```

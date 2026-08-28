@@ -10,5 +10,6 @@ public record struct RegexException(string Name, string Description, FileTraceIn
   public const string NoFunctionException = "no_fn";
   public const string ParsingException = "parse";
   public const string NumberParsingException = "parse_num";
+  public const string OperationCancelledException = "cancel";
   public const string IOException = "io";
 }

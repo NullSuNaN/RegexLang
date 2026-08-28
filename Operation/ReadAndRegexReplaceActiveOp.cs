@@ -19,7 +19,7 @@ public record ReadAndRegexReplaceActiveOp(string VariableName, RegexReplacement 
     }
     if (Command.Rule == null)
     {
-      context.Throw(new(RegexException.ParsingException, "Illegal sed rule", FileTrace));
+      context.Throw(new(RegexException.ParsingException, "Illegal regular expression", FileTrace));
       return;
     }
     context.ActiveValue = Command.Apply(value, context);

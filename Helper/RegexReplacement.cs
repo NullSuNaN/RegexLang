@@ -37,7 +37,7 @@ public partial record RegexReplacement(Regex? Rule, string Replacement, bool Glo
   }
 
   /// <summary>
-  /// Parses a sed replacement command (e.g., "/pattern/replacement/flags") asynchronously from a reader.
+  /// Parses a sed styled replacement command (e.g., "/pattern/replacement/flags") asynchronously from a reader.
   /// Expects the stream pointer to be immediately after the leading op char.
   /// </summary>
   /// <param name="setDelimiter">Set delimiter, then do not read the leading one</param>
@@ -102,7 +102,7 @@ public partial record RegexReplacement(Regex? Rule, string Replacement, bool Glo
           options |= RegexOptions.Singleline;
           break;
         default:
-          throw new FormatException($"Unsupported sed flag '{flag}'.");
+          throw new FormatException($"Unsupported flag '{flag}'.");
       }
     }
     return (options, global);

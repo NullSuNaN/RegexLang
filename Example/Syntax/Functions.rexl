@@ -5,32 +5,32 @@ f/s/newline/
 
 f/s/op1/
   o/.*/Operation 1./ms
-  f/c/newline/
+  f/c/.*/newline/ms
 /
 
 f/s/op2/
   o/.*/Operation 2./ms
-  f/c/newline/
+  f/c/.*/newline/ms
 /
 
 f/s/op3/
   o/.*/Operation 3./ms
-  f/c/newline/
+  f/c/.*/newline/ms
 /
 
 o/.*/Call Result: /ms
-f/c/newline/
-f/c/newline/
-f/c/op1/
-f/c/op2/
-f/c/op3/
+f/c/.*/newline/ms
+f/c/.*/newline/ms
+f/c/.*/op1/ms
+f/c/.*/op2/ms
+f/c/.*/op3/ms
 
 w/op/.*/op1/ms
-f/c/@op/
+f/c/.*/@op/ms
 
 w/op/.*/op3/ms
-f/c/@op/
+f/c/.*/@op/ms
 
 # remove newline function
 f/u/newline/
-f/c/newline/
+f/c/.*/newline/ms

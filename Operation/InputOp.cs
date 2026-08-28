@@ -1,3 +1,4 @@
+using AsyncConsoleReader;
 using RegexLang.Code;
 using RegexLang.Helper;
 using RegexLang.Runtime;
@@ -25,12 +26,17 @@ public record InputOp(RegexReplacement Command, FileTraceInfo? FileTrace) : IOpe
     try
     {
       var result = new char[original.Length];
-      await Console.In.ReadAsync(result, 0, original.Length);
+      for(var i = 0; i < original.Length; ++i)
+        result[i] = Convert.ToChar(await AsyncConsole.ReadAsync(context.cts.Token));
       context.ActiveValue = Command.Apply(string.Concat(result), context);
     }
     catch(IOException ex)
     {
       context.Throw(new(RegexException.IOException, ex.Message, FileTrace));
+    }
+    catch(OperationCanceledException)
+    {
+      await context.CancelAsync();
     }
   }
 }

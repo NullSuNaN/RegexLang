@@ -3,7 +3,7 @@ using RegexLang.Runtime;
 
 namespace RegexLang.Operation;
 
-public record DefineFunctionOp(LinearOperationList? OpList, string Name, FileTraceInfo? FileTrace) : IOperation
+public record DeclareFunctionOp(LinearOperationList? OpList, string Name, FileTraceInfo? FileTrace) : IOperation
 {
   public async Task OperateAsync(TaskContext context)
   {
