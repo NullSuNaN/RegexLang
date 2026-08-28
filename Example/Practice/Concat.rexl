@@ -14,3 +14,7 @@ v/(.*)/tmp/ms
 // output
 o/(.*)/\0
 /ms
+
+// or u can just
+# o/.*/Hello, /ms
+# o/.*/World\\!\//ms

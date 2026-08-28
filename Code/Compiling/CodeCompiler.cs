@@ -9,10 +9,20 @@ public static class CodeCompiler
 {
   public static async Task<(CompiledProgram? Program, List<CompileOutput> Outputs)> CompileAsync(FileInfo EntryFile, CancellationToken token)
   {
-    using var stream = EntryFile.OpenRead();
+    List<CompileOutput> outputs = [];
+    FileStream stream;
+    try
+    {
+      stream = EntryFile.OpenRead();
+    }
+    catch (Exception ex) when (ex is FileNotFoundException || ex is DirectoryNotFoundException)
+    {
+      outputs.Add(new(CompileOutput.Levels.Error, ex.Message, new(EntryFile, null, null)));
+      return (null, outputs);
+    }
+    using var _ = stream;
     using StreamReader baseReader = new(stream);
     using PositionTrackingTextReader reader = new(baseReader);
-    List<CompileOutput> outputs = [];
     CompiledProgram program = new()
     {
       Entry = await CompileOperationListAsync(new(new(new(outputs), FileTraceInfo.GetPath(EntryFile), reader), EndOfBlock.EndOfStream), token)

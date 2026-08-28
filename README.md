@@ -5,8 +5,8 @@
 `RegexLang` is a silly programming language where almost every operation is based on a *Regular Expression*.
 
 While regex is typically used for matching strings, they can also be used as logic components.
-And this language gives regex logics like conditions, loops, methods, exceptions and threads.
-It is basically a more advanced and structured version of the sed command.
+And this language gives regex logics like conditions, loops, methods and exceptions.
+It is basically a more advanced, structured and regex-focused version of the sed command.
 
 ## RegexLang Syntax
 
